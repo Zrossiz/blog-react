@@ -25,4 +25,4 @@ export const BlogCard = ({ title, description, liked, likePost, deletePost}) => 
             </button>
         </div>
     )
-}
+} 

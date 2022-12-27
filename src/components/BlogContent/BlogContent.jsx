@@ -2,13 +2,14 @@ import React from 'react'
 import './BlogContent.css'
 
 import { BlogCard } from './components/BlogCard'
+import { AddPostForm } from './components/AddPostForm'
 
 import { posts } from '../../shared/projectData'
 
 export class BlogContent extends React.Component {
 
   state = {
-    showBlog: true,
+    showAddForm: false,
     blogArr: JSON.parse(localStorage.getItem('blogPosts')) || posts
   };
 
@@ -22,14 +23,6 @@ export class BlogContent extends React.Component {
 
     localStorage.setItem('blogPosts', JSON.stringify(temp))
   }
-
-  toggleBlog = () => {
-    this.setState(({ showBlog }) => {
-      return {
-        showBlog: !showBlog
-      };
-    });
-  };
 
   deletePost = index => {
     if (window.confirm(`Хотите ${this.state.blogArr[index].title} удалить?`)) {
@@ -45,6 +38,18 @@ export class BlogContent extends React.Component {
       localStorage.setItem('blogPosts', JSON.stringify(temp))
     }
     
+  }
+
+  handleShowAddForm = () => {
+    this.setState({
+      showAddForm: true
+    })
+  }
+
+  handleAddFormHide = () => {
+    this.setState({
+      showAddForm: false
+    })
   }
   
   render() {
@@ -63,22 +68,18 @@ export class BlogContent extends React.Component {
     });
     return (
       <React.Fragment>
-        <button onClick={this.toggleBlog}>
-          {
-            this.state.showBlog ? 'Скрыть блог' : 'Показать блог'
-          }
-        </button>
-        
         {
-          this.state.showBlog ? 
+          this.state.showAddForm ? <AddPostForm  handleAddFormHide={this.handleAddFormHide}/> : null
+        }
+        
+
           <>
             <h1>Simple Blog</h1>
+            <button className='blackBtn' onClick={this.handleShowAddForm}>Добавить пост</button>
             <div className="posts">
               {blogPosts}
             </div>
           </>
-          : null
-        }
           
         </React.Fragment>
     )
