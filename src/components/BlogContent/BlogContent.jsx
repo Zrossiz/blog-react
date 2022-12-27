@@ -51,6 +51,39 @@ export class BlogContent extends React.Component {
       showAddForm: false
     })
   }
+
+  handleEscape = (e) => {
+    if (e.key === 'Escape' && this.state.showAddForm) {
+      this.handleAddFormHide()
+    }
+  }
+
+  addNewBlogPost = (blogPost) => {
+    const temp = [...this.state.blogArr];
+    temp.push(blogPost)
+
+    this.setState({
+      blogArr: temp
+    })
+
+    this.setState((state) => {
+      const posts = [...state.blogArr];
+      posts.push(blogPost)
+      localStorage.setItem('blogPosts', JSON.stringify(posts))
+
+      return {
+        blogArr: temp
+      }
+    })
+  }
+
+  componentDidMount() {
+    window.addEventListener('keyup', this.handleEscape)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keyup', this.handleEscape)
+  }
   
   render() {
     const blogPosts = this.state.blogArr.map((item, index) => {
@@ -67,21 +100,29 @@ export class BlogContent extends React.Component {
       );
     });
     return (
-      <React.Fragment>
-        {
-          this.state.showAddForm ? <AddPostForm  handleAddFormHide={this.handleAddFormHide}/> : null
-        }
+      <div className='blogPage'>
+        {this.state.showAddForm ? <AddPostForm  
+          blogArr={this.state.blogArr}
+          addNewBlogPost={this.addNewBlogPost}
+          handleAddFormHide={this.handleAddFormHide}
+        /> : null}
         
-
           <>
-            <h1>Simple Blog</h1>
-            <button className='blackBtn' onClick={this.handleShowAddForm}>Добавить пост</button>
+            <h1>Blog page</h1>
             <div className="posts">
               {blogPosts}
             </div>
+            <div className="addPostBlock">
+              <button 
+              className='blackBtn' 
+              onClick={this.handleShowAddForm}>
+              Добавить пост
+              </button>
+            </div>
+            
           </>
           
-        </React.Fragment>
+        </div>
     )
   }
 }
