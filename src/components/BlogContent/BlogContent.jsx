@@ -1,16 +1,17 @@
 import React from 'react'
+import axios from 'axios'
+
 import './BlogContent.css'
 
 import { BlogCard } from './components/BlogCard'
 import { AddPostForm } from './components/AddPostForm'
 
-import { posts } from '../../shared/projectData'
-
 export class BlogContent extends React.Component {
 
   state = {
     showAddForm: false,
-    blogArr: JSON.parse(localStorage.getItem('blogPosts')) || posts
+    blogArr: [],
+    isPending: false
   };
 
   likePost = index => {
@@ -24,20 +25,34 @@ export class BlogContent extends React.Component {
     localStorage.setItem('blogPosts', JSON.stringify(temp))
   }
 
-  deletePost = index => {
-    if (window.confirm(`Хотите ${this.state.blogArr[index].title} удалить?`)) {
-      const temp = [...this.state.blogArr];
-      temp.splice(index, 1)
-      console.log('Эталонный массив =>', this.state.blogArr);
-      console.log('Измененный массив', temp)
-
-      this.setState({
-        blogArr: temp
+  fetchPosts = () => {
+    this.setState({
+      isPending: true
+    })
+    axios.get('https://63ab4257fdc006ba605a82a8.mockapi.io/posts')
+      .then((res) => {
+        this.setState({
+          blogArr: res.data,
+          isPending: false
+        })
       })
+      .catch((err) => {
+        console.log(err)
+    })
+  }
 
-      localStorage.setItem('blogPosts', JSON.stringify(temp))
+  deletePost = blogPost => {
+    if (window.confirm(`Хотите ${blogPost.title} удалить?`)) {
+
+      axios.delete(`https://63ab4257fdc006ba605a82a8.mockapi.io/posts/${blogPost.id}`)
+        .then((response) => {
+          console.log('Пост удален => ', response.data)
+          this.fetchPosts()
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
-    
   }
 
   handleShowAddForm = () => {
@@ -78,6 +93,7 @@ export class BlogContent extends React.Component {
   }
 
   componentDidMount() {
+    this.fetchPosts()
     window.addEventListener('keyup', this.handleEscape)
   }
 
@@ -95,10 +111,15 @@ export class BlogContent extends React.Component {
           likeCount={item.likeCount}
           liked={item.liked}
           likePost={() => this.likePost(index)}
-          deletePost={() => this.deletePost(index)}
+          deletePost={() => this.deletePost(item)}
           />
       );
     });
+
+    if (this.state.blogArr.length === 0) {
+      return <h1>Загружаю данные...</h1>
+    }
+
     return (
       <div className='blogPage'>
         {this.state.showAddForm ? <AddPostForm  
@@ -119,7 +140,9 @@ export class BlogContent extends React.Component {
               Добавить пост
               </button>
             </div>
-            
+            {
+              this.state.isPending && <h2>Подождите</h2>
+            }
           </>
           
         </div>
