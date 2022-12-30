@@ -12,7 +12,6 @@ export const BlogCard = ({ title, description, liked, likePost, deletePost}) => 
             <div className="postContent">
                <h2>{title}</h2>
                 <p>{description}</p>
-
                 <div>
                     <button onClick={likePost}>
                         <FavoriteIcon style={{fill:heartFill}} />    

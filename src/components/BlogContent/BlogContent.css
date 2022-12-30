@@ -1,6 +1,18 @@
+
+
 .posts {
     width: 60%;
     margin: auto;
+}
+
+.blogPage {
+    position: relative;
+}
+
+.blogPage .preloader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
 }
 
 .blackBtn {
@@ -22,4 +34,14 @@
 
 .addPostBlock {
     text-align: center;
+}
+
+.condition-pending::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: '';
+    background-color: rgb(214, 214, 214, 0.5);
+    width: 100vw;
+    height: 100vh;
 }

@@ -27,7 +27,6 @@ export class AddPostForm extends Component {
   createPost = (e) => {
     e.preventDefault()
     const post = {
-      id: this.props.blogArr.length + 1,
       title: this.state.postTitle,
       description: this.state.postDescription,
       liked: false
@@ -72,6 +71,7 @@ export class AddPostForm extends Component {
             <button 
               type="submit"
               className="blackBtn"
+              onClick={this.state.createPost}
             >Добавить пост</button>
           </div>
         </form>
