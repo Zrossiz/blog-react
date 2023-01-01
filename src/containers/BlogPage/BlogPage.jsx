@@ -1,20 +1,24 @@
 import React from 'react'
 import axios from 'axios'
 
-import './BlogContent.css'
+import './BlogPage.css'
 
 import { BlogCard } from './components/BlogCard'
 import { AddPostForm } from './components/AddPostForm'
+import { EditPostForm } from './components/EditPostForm'
 
-import CircularProgress from '@mui/material/CircularProgress';
+import { postsUrl } from '../../shared/projectData'
 
+import CircularProgress from '@mui/material/CircularProgress'
 
-export class BlogContent extends React.Component {
+export class BlogPage extends React.Component {
 
   state = {
     showAddForm: false,
+    showEditForm: false,
     blogArr: [],
-    isPending: false
+    isPending: false,
+    selectedPost: {}
   };
 
   likePost = blogPost => {
@@ -22,7 +26,7 @@ export class BlogContent extends React.Component {
     const temp = {...blogPost};
     temp.liked = !temp.liked
 
-    axios.put(`https://63ab4257fdc006ba605a82a8.mockapi.io/posts/${blogPost.id}`, temp)
+    axios.put(`${postsUrl}${blogPost.id}`, temp)
       .then((response) => {
         console.log('Пост изменён =>', response.data)
         this.fetchPosts()
@@ -33,7 +37,7 @@ export class BlogContent extends React.Component {
   }
 
   fetchPosts = () => { 
-    axios.get('https://63ab4257fdc006ba605a82a8.mockapi.io/posts')
+    axios.get(postsUrl)
       .then((res) => {
         this.setState({
           blogArr: res.data,
@@ -52,7 +56,7 @@ export class BlogContent extends React.Component {
         isPending: true
       })
 
-      axios.delete(`https://63ab4257fdc006ba605a82a8.mockapi.io/posts/${blogPost.id}`)
+      axios.delete(`${postsUrl}${blogPost.id}`)
         .then((response) => {
           console.log('Пост удален => ', response.data)
           this.fetchPosts()
@@ -61,6 +65,20 @@ export class BlogContent extends React.Component {
           console.log(err)
         })
     }
+  }
+  
+  editBlogPost = (updatedBlogPost) => {
+    this.setState({
+      isPending: true
+    })
+    axios.put(`${postsUrl}${updatedBlogPost.id}`, updatedBlogPost)
+      .then((response) => {
+        console.log('Пост отредактирован => ', response.data)
+        this.fetchPosts()
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   }
 
   handleShowAddForm = () => {
@@ -75,17 +93,23 @@ export class BlogContent extends React.Component {
     })
   }
 
-  handleEscape = (e) => {
-    if (e.key === 'Escape' && this.state.showAddForm) {
-      this.handleAddFormHide()
-    }
+  handleEditFormShow = () => {
+    this.setState({
+      showEditForm: true
+    })
+  }
+
+  handleEditFormHide = () => {
+    this.setState({
+      showEditForm: false
+    })
   }
 
   addNewBlogPost = (blogPost) => {
     this.setState({
       isPending: true
     })
-    axios.post('https://63ab4257fdc006ba605a82a8.mockapi.io/posts/', blogPost)
+    axios.post(postsUrl, blogPost)
       .then((response) => {
         console.log('Пост создан =>', response.data)
         this.fetchPosts()
@@ -97,11 +121,12 @@ export class BlogContent extends React.Component {
 
   componentDidMount() {
     this.fetchPosts()
-    window.addEventListener('keyup', this.handleEscape)
-  }
+  } 
 
-  componentWillUnmount() {
-    window.removeEventListener('keyup', this.handleEscape)
+  handleSelectPost = (blogPost) => {
+    this.setState({
+      selectedPost: blogPost
+    })
   }
   
   render() {
@@ -115,6 +140,8 @@ export class BlogContent extends React.Component {
           liked={item.liked}
           likePost={() => this.likePost(item)}
           deletePost={() => this.deletePost(item)}
+          handleEditFormShow={this.handleEditFormShow}
+          handleSelectPost={() => this.handleSelectPost(item)}
           />
       );
     });
@@ -132,6 +159,16 @@ export class BlogContent extends React.Component {
           addNewBlogPost={this.addNewBlogPost}
           handleAddFormHide={this.handleAddFormHide}
         /> : null}
+
+        {
+          this.state.showEditForm && (
+          <EditPostForm onClick={this.handleEditFormShow}
+            handleEditFormHide={this.handleEditFormHide}
+            selectedPost={this.state.selectedPost}
+            editBlogPost={this.editBlogPost}
+          />
+          )
+        }
         
           <>
             <h1>Blog page</h1>

@@ -1,0 +1,32 @@
+.loginForm {
+    background-color: rgb(241, 240, 240);
+    width: 3;
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    
+}
+
+.loginFormInput {
+    width: max-content;
+    padding: 2px 5px;
+    border-radius: 5px;
+    border: 1px solid rgb(151, 151, 151);
+}
+
+.loginFormInput:focus::placeholder {
+    color: transparent
+}
+
+input,textarea {
+    outline: unset;
+
+}
+
+h2 {
+    margin: 0;
+}
+
+div {
+    margin-top: 10px;
+}
