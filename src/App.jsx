@@ -13,8 +13,14 @@ export function App() {
           <Header />
           <main>
             <Routes>
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/" element={<BlogPage />} />  
+              <Route
+               path="/login"
+               element={<LoginPage />}
+              />
+              <Route
+               path="/"
+               element={<BlogPage />} 
+              />  
             </Routes>  
           </main>
           <Footer 

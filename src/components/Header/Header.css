@@ -18,3 +18,9 @@ header a {
 header a:hover {
     color: #d15700
 }
+
+header {
+    margin: auto;
+    box-shadow: 20px 20px 20px rgb(238 238 238 / 21%);
+    width: 50%;
+}

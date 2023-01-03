@@ -11,6 +11,8 @@ import { postsUrl } from '../../shared/projectData'
 
 import CircularProgress from '@mui/material/CircularProgress'
 
+let source;
+
 export class BlogPage extends React.Component {
 
   state = {
@@ -36,18 +38,29 @@ export class BlogPage extends React.Component {
       })
   }
 
-  fetchPosts = () => { 
-    axios.get(postsUrl)
-      .then((res) => {
+  fetchPosts = () => {
+    source = axios.CancelToken.source();
+    axios
+      .get(postsUrl, { cancelToken: source.token })
+      .then((response) => {
         this.setState({
-          blogArr: res.data,
-          isPending: false
-        })
-        this.handleAddFormHide()
+          blogArr: response.data,
+          isPending: false,
+        });
       })
       .catch((err) => {
-        console.log(err)
-    })
+        console.log(err);
+      });
+  };
+
+  componentDidMount() {
+    this.fetchPosts()
+  } 
+
+  componentWillUnmount() {
+    if (source) {
+      source.cancel('Axios get canceled')
+    }
   }
 
   deletePost = blogPost => {
@@ -118,10 +131,6 @@ export class BlogPage extends React.Component {
         console.log(err)
       })
   }
-
-  componentDidMount() {
-    this.fetchPosts()
-  } 
 
   handleSelectPost = (blogPost) => {
     this.setState({
